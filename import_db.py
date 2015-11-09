@@ -1,31 +1,39 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import sys
+reload(sys)
+sys.setdefaultencoding( "utf-8" )
 
 import json
 import pymongo
 from pymongo import Connection
+import conf
 
-MONGODB_SERVER = "192.168.199.167"
-MONGODB_PORT = 27017
-MONGODB_DB = "gtja"
-MONGODB_COLLECTION_REPORT_ABSTRACT = "report_abstract"
-MONGODB_COLLECTION_REPORT_FILE = "report_file"
-MONGODB_COLLECTION_REPORT_VISITED = "report_visited"
-MAX_RECORDS = 100
-
-FILE_PATH = ""
-FILE_REPORT_ABSTRACT = "report_abstract.json"
-
-def import_db_from_file(file_name):
+def import_db_from_file(collection, file_name):
     with open(file_name) as f:
-        pass
+        for line in f:
+            item = json.loads(line)
+            if collection.find_one({"url":item["url"]}) != None:
+                continue
+            
+            if item.has_key("_id") == True:
+                item.pop("_id")
+            collection.insert(item)
 
 if __name__ == "__main__":
     print("Connect DB.")
-    connection = Connection(MONGODB_SERVER, MONGODB_PORT)
-    db = connection[MONGODB_DB]
-    collection_report_abstract = db[MONGODB_COLLECTION_REPORT_ABSTRACT]
-    collection_report_file = db[MONGODB_COLLECTION_REPORT_FILE]
-    collection_report_visited = db[MONGODB_COLLECTION_REPORT_VISITED]
+    connection = Connection(conf.MONGODB_SERVER, conf.MONGODB_PORT)
+    db = connection[conf.MONGODB_DB]
+    collection_report_abstract = db[conf.MONGODB_COLLECTION_REPORT_ABSTRACT]
+    collection_report_file = db[conf.MONGODB_COLLECTION_REPORT_FILE]
+    collection_report_visited = db[conf.MONGODB_COLLECTION_REPORT_VISITED]
 
     print("Import DB.")
-    import_db_from_file(FILE_REPORT_ABSTRACT)
+    collection = db["test"]
+    file_name = conf.FILE_PATH + collection_report_abstract.name + ".json"
+    import_db_from_file(collection, file_name)
+    file_name = conf.FILE_PATH + collection_report_file.name + ".json"
+    import_db_from_file(collection, file_name)
+    print("Import successfully")
     
