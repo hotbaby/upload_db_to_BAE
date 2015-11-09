@@ -6,6 +6,8 @@ sys.setdefaultencoding( "utf-8" )
 import json
 import pymongo
 from pymongo import Connection
+from bson.objectid import ObjectId
+from datetime import datetime
 import conf
 
 def export_db(collection, *fields):
@@ -19,11 +21,16 @@ def export_db(collection, *fields):
     while True:
         try:
             item = cursor.next()
-            if item["date"]:
-                item["date"] = str(item["date"])
+
+            now = datetime.now()
+            time_delta = now - item["create_date"]
+            if time_delta.days >= conf.EXPIRE_DAYS:
+                break
+            
+            for k in item.keys():
+                if isinstance(item[k], (datetime, ObjectId)):
+                    item[k] = str(item[k])
                 
-            if item["_id"]:
-                item["_id"] = str(item["_id"])
             f.write(json.dumps(item))
             f.write("\n")
         except StopIteration, e:
