@@ -6,9 +6,15 @@ reload(sys)
 sys.setdefaultencoding( "utf-8" )
 
 import json
-import pymongo
 from pymongo import MongoClient
 import conf
+import bos_conf
+from baidubce.services.bos.bos_client import BosClient
+
+bos_client = BosClient(bos_conf.config)
+
+def download_file_from_bae(bucket_name, object_name, file_name):
+    bos_client.get_object_to_file(bucket_name, object_name, file_name)
 
 def import_db_from_file(collection, file_name):
     with open(file_name) as f:
@@ -31,9 +37,16 @@ if __name__ == "__main__":
 
     print("Import DB.")
     collection = db["test"]
-    file_name = conf.FILE_PATH + collection_report_abstract.name + ".json"
+    
+    bucket_name = conf.BUCKET_NAME
+    object_name = conf.OBJECT_REPORT_ABSTRACT
+    file_name = conf.FILE_PATH + object_name
+    download_file_from_bae(bucket_name, object_name, file_name)
     import_db_from_file(collection, file_name)
-    file_name = conf.FILE_PATH + collection_report_file.name + ".json"
+    
+    object_name = conf.OBJECT_REPORT_FILE
+    file_name = conf.FILE_PATH + object_name
+    download_file_from_bae(bucket_name, object_name, file_name)
     import_db_from_file(collection, file_name)
     print("Import successfully")
     

@@ -3,9 +3,7 @@
 echo "######START######"
 echo $("date")
 
-git pull
-python export_db.py
-python upload.py
+python import_db.py
 
 echo "######END######"
 echo "\n"

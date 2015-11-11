@@ -15,7 +15,7 @@ def export_db(collection, *fields):
     for filed in fields:
         return_filds[filed] = 1
     
-    file_name = conf.FILE_PATH + collection.name + ".json"
+    file_name = conf.FILE_PATH + collection.name
     f = open(file_name, "wb")
     cursor = collection.find().sort([("create_date", pymongo.DESCENDING)]).limit(conf.MAX_RECORDS)
     while True:
