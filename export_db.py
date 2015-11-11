@@ -5,7 +5,7 @@ sys.setdefaultencoding( "utf-8" )
 
 import json
 import pymongo
-from pymongo import Connection
+from pymongo import MongoClient
 from bson.objectid import ObjectId
 from datetime import datetime
 import conf
@@ -17,7 +17,7 @@ def export_db(collection, *fields):
     
     file_name = conf.FILE_PATH + collection.name + ".json"
     f = open(file_name, "wb")
-    cursor = collection.find().sort([("date", pymongo.DESCENDING)]).limit(conf.MAX_RECORDS)
+    cursor = collection.find().sort([("create_date", pymongo.DESCENDING)]).limit(conf.MAX_RECORDS)
     while True:
         try:
             item = cursor.next()
@@ -43,12 +43,14 @@ def export_db(collection, *fields):
 
 if __name__ == "__main__":
     print("Connect DB.")
-    connection = Connection(conf.MONGODB_SERVER, conf.MONGODB_PORT)
+    connection = MongoClient(conf.MONGODB_SERVER, conf.MONGODB_PORT)
     db = connection[conf.MONGODB_DB]
     collection_report_abstract = db[conf.MONGODB_COLLECTION_REPORT_ABSTRACT]
     collection_report_file = db[conf.MONGODB_COLLECTION_REPORT_FILE]
     
     print("Export DB.")
+    print("Export %s." % collection_report_abstract.name)
     export_db(collection_report_abstract)
+    print("Export %s." % collection_report_file.name)
     export_db(collection_report_file)
     print("Export successfully.")

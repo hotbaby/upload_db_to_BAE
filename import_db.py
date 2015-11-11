@@ -7,7 +7,7 @@ sys.setdefaultencoding( "utf-8" )
 
 import json
 import pymongo
-from pymongo import Connection
+from pymongo import MongoClient
 import conf
 
 def import_db_from_file(collection, file_name):
@@ -23,7 +23,7 @@ def import_db_from_file(collection, file_name):
 
 if __name__ == "__main__":
     print("Connect DB.")
-    connection = Connection(conf.MONGODB_SERVER, conf.MONGODB_PORT)
+    connection = MongoClient(conf.MONGODB_SERVER, conf.MONGODB_PORT)
     db = connection[conf.MONGODB_DB]
     collection_report_abstract = db[conf.MONGODB_COLLECTION_REPORT_ABSTRACT]
     collection_report_file = db[conf.MONGODB_COLLECTION_REPORT_FILE]
