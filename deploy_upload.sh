@@ -8,4 +8,3 @@ python export_db.py
 python upload.py
 
 echo "######END######"
-echo "\n"
