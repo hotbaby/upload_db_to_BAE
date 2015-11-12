@@ -1,8 +1,10 @@
 
+
 import sys
 reload(sys)
 sys.setdefaultencoding( "utf-8" )
 
+import os
 import json
 import pymongo
 from pymongo import MongoClient
@@ -17,6 +19,7 @@ def export_db(collection, *fields):
     
     file_name = conf.FILE_PATH + collection.name
     f = open(file_name, "wb")
+    f.write("[")
     cursor = collection.find().sort([("create_date", pymongo.DESCENDING)]).limit(conf.MAX_RECORDS)
     while True:
         try:
@@ -30,15 +33,18 @@ def export_db(collection, *fields):
             for k in item.keys():
                 if isinstance(item[k], (datetime, ObjectId)):
                     item[k] = str(item[k])
+            item.pop("_id")
                 
             f.write(json.dumps(item))
-            f.write("\n")
+            f.write(",")
         except StopIteration, e:
             print(e)
             break
         except Exception as e:
             print(e)
             break
+    f.seek(-1, os.SEEK_END)
+    f.write("]")
     f.close()
 
 if __name__ == "__main__":

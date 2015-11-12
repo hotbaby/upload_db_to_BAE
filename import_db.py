@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+from win32con import FILE_NAME_OPENED
 reload(sys)
 sys.setdefaultencoding( "utf-8" )
 
@@ -27,7 +28,7 @@ def import_db_from_file(collection, file_name):
                 item.pop("_id")
             collection.insert(item)
 
-if __name__ == "__main__":
+def import_db():
     print("Connect DB.")
     connection = MongoClient(conf.MONGODB_SERVER, conf.MONGODB_PORT)
     db = connection[conf.MONGODB_DB]
@@ -50,3 +51,15 @@ if __name__ == "__main__":
     import_db_from_file(collection, file_name)
     print("Import successfully")
     
+def test(file_name):
+    print(file_name)
+    f = open(file_name)
+    s = f.read(1024*1024)
+    s_json = json.loads(s)
+    for item in s_json:
+        print(json.dumps(item))
+    f.close()
+
+if __name__ == "__main__":
+    file_name = conf.FILE_PATH + conf.MONGODB_COLLECTION_REPORT_ABSTRACT
+    test(file_name)
